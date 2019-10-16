@@ -1,0 +1,4 @@
+#!/bin/bash
+# installing linux libraries for geospatial work
+apt-get update && apt-get upgrade -y
+apt-get install default-jdk libgdal-dev libgeos-dev -y
