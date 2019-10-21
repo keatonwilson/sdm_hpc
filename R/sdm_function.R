@@ -457,15 +457,13 @@ build_sdm = function(multi_species_df, year_split, env_raster_t1, env_raster_t2,
   for(n in 1:length(prepped_data_list)){
     full_mod_t1 = try(full_model(models_obj = prepped_data_list[[n]]$models[[1]],
                                  best_model_index = prepped_data_list[[n]]$best_mod[[1]][[2]],
-                                 full_data = butt_list[[n]] %>%
-                                   filter(year < year_split), 
+                                 full_data = prepped_data_list[[n]]$prepped_dfs[[1]],
                                  env_raster = prepped_data_list[[n]]$env_data[[1]]
     ))
     
     full_mod_t2 = try(full_model(models_obj = prepped_data_list[[n]]$models[[2]],
                                  best_model_index = prepped_data_list[[n]]$best_mod[[2]][[2]],
-                                 full_data = butt_list[[n]] %>%
-                                   filter(year >= year_split), 
+                                 full_data = prepped_data_list[[n]]$prepped_dfs[[2]],
                                  env_raster = prepped_data_list[[n]]$env_data[[2]]))
     
     prepped_data_list[[n]]$full_mods = list(full_mod_t1, full_mod_t2)
@@ -564,11 +562,3 @@ data = read_csv("./data/candidate_occurences.csv") %>%
 test_cases_2 = build_sdm(multi_species_df = data, year_split = 2000, env_raster_t1 = bv_t1, env_raster_t2 = bv_t2)
 
 saveRDS(test_cases_2, "./output/clodius_new_ev.rds")
-
-
-test_mod = maxnet(p = test_cases_2$`Parnassius clodius`$prepped_dfs[[1]]$Species, 
-                  data = test_cases_2$`Parnassius clodius`$prepped_dfs[[1]][,1:19],
-                  maxnet.formula(test_cases_2$`Parnassius clodius`$prepped_dfs[[1]]$Species, 
-                                 test_cases_2$`Parnassius clodius`$prepped_dfs[[1]][,1:19], 
-                                 classes = FC_best), 
-                  regmult = rm_best)
