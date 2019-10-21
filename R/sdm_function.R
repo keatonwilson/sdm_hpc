@@ -318,7 +318,7 @@ make.args <- function(RMvalues=seq(0.5, 4, 0.5), fc=c("L", "LQ", "H", "LQH", "LQ
 
 full_model = function(models_obj, best_model_index, full_data = NULL, env_raster) {
   auc_mod = models_obj@results[best_model_index,]
-  FC_best = as.character(auc_mod$fc[1])
+  FC_best = tolower(as.character(auc_mod$fc[1]))
   rm_best = auc_mod$rm
   
   
@@ -327,8 +327,14 @@ full_model = function(models_obj, best_model_index, full_data = NULL, env_raster
   # re calculating environmental raster
   
   
-  full_mod = maxent(env_raster, as.matrix(full_data[,1:2]), args = maxent.args[[1]])
+  # full_mod = maxent(env_raster, as.matrix(full_data[,1:2]), args = maxent.args[[1]])
+  full_mod = maxnet(p = full_data$Species, data = full_data[,1:19],
+                    maxnet.formula(full_data$Species, 
+                                   full_data[,1:19], 
+                                   classes = FC_best), 
+                    regmult = rm_best)
   return(full_mod)
+  
 }
 
 
@@ -558,3 +564,11 @@ data = read_csv("./data/candidate_occurences.csv") %>%
 test_cases_2 = build_sdm(multi_species_df = data, year_split = 2000, env_raster_t1 = bv_t1, env_raster_t2 = bv_t2)
 
 saveRDS(test_cases_2, "./output/clodius_new_ev.rds")
+
+
+test_mod = maxnet(p = test_cases_2$`Parnassius clodius`$prepped_dfs[[1]]$Species, 
+                  data = test_cases_2$`Parnassius clodius`$prepped_dfs[[1]][,1:19],
+                  maxnet.formula(test_cases_2$`Parnassius clodius`$prepped_dfs[[1]]$Species, 
+                                 test_cases_2$`Parnassius clodius`$prepped_dfs[[1]][,1:19], 
+                                 classes = FC_best), 
+                  regmult = rm_best)
