@@ -1,0 +1,13 @@
+#!/bin/bash
+
+#PBS -N sdm_test_script
+#PBS -W group_list=klprudic
+#PBS -m keatonwilson@email.arizona.edu
+#PBS -q windfall
+#PBS -l select1:ncpus=28:mem=168gb:pcmem=6gb
+#PBS -l walltime=3:0:0
+
+module load java/1.8 proj/4 gdal geos R
+
+cd ~/sdm_hpc
+Rscript sdm_function.R
